@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#8c0000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="คลังเจ๋งแจ๋ว">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <title>คลังเจ๋งแจ๋ว</title>
+  <style>
+    :root{
+      --red-dark:#5a0000; --red:#a80000; --red2:#d71919;
+      --gold:#d9a441; --gold2:#ffd76a; --cream:#fff8e8;
+      --text:#3d2118; --muted:#7d685d; --white:#fff; --green:#168542;
+      --shadow:0 14px 34px rgba(74,0,0,.14); --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif;background:linear-gradient(135deg,#fffaf1,#fff1df);color:var(--text)}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .app{min-height:100vh;display:flex}
+    .sidebar{position:fixed;inset:0 auto 0 0;width:260px;padding:18px;background:linear-gradient(180deg,var(--red-dark),#8d0000 55%,#650000);color:#fff;z-index:20;overflow:auto}
+    .brand{display:flex;gap:12px;align-items:center;padding:8px 4px 18px}
+    .brand img{width:54px;height:54px;border-radius:16px;object-fit:cover;box-shadow:0 6px 16px #26000066}
+    .brand strong{font-size:20px;display:block}.brand span{font-size:12px;color:#ffe7a8}
+    nav{display:grid;gap:8px;margin-top:8px}
+    nav button{border:0;background:transparent;color:#fff;text-align:left;padding:13px 15px;border-radius:14px;font-weight:700;display:flex;gap:10px;align-items:center}
+    nav button:hover,nav button.active{background:rgba(255,255,255,.14);box-shadow:inset 3px 0 var(--gold2)}
+    .sidebar-profile{margin-top:18px;padding:14px;border:1px solid rgba(255,215,106,.35);border-radius:18px;background:rgba(255,255,255,.06);display:flex;gap:10px;align-items:center}
+    .avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#fff3;display:grid;place-items:center;font-weight:800;overflow:hidden;border:2px solid #f7d477}
+    .avatar img{width:100%;height:100%;object-fit:cover}.mini-name{font-weight:800;font-size:14px}.mini-sub{font-size:11px;color:#ffd985}
+    main{width:100%;margin-left:260px;padding:22px}
+    .topbar{position:sticky;top:0;z-index:10;background:rgba(255,248,232,.92);backdrop-filter:blur(10px);padding:10px 0 16px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .topbar h1{margin:0;font-size:26px}.topbar p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .profile-chip{border:1px solid #ead39b;background:#fff;padding:8px 12px;border-radius:999px;display:flex;align-items:center;gap:8px}
+    .profile-chip .avatar{width:32px;height:32px}
+    .page{display:none}.page.active{display:block}
+    .grid{display:grid;gap:18px}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .card{background:#fff;border:1px solid #efdfbe;border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+    .card h3{margin:0 0 12px}.card .muted{color:var(--muted)}
+    .stat{position:relative;overflow:hidden}.stat:after{content:"";position:absolute;right:-28px;top:-28px;width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#ffd86a55,#a8000017)}
+    .stat .label{color:var(--muted);font-size:13px}.stat .value{font-size:29px;font-weight:900;margin-top:8px}
+    .gold{color:#8e5e00}.red{color:#a60000}.green{color:#12743a}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+    .btn{border:0;border-radius:13px;padding:11px 14px;font-weight:800}.btn-red{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#4b2e00}.btn-light{background:#fff;border:1px solid #ead7b0;color:var(--text)}
+    .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.form .full{grid-column:1/-1}
+    label{font-size:13px;font-weight:800;color:#60483c;display:block;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid #dfcfb5;border-radius:12px;padding:12px;background:#fffaf3;outline:none}textarea{min-height:100px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px #d9a44122}
+    table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px solid #f0e4d0;text-align:left;font-size:13px}th{background:#fff8e8}
+    .table-wrap{overflow:auto;border:1px solid #efdfc5;border-radius:16px}
+    .pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800}.pill-in{background:#e8f8ee;color:#12743a}.pill-out{background:#ffe9e9;color:#a60000}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}.danger{color:#a60000;border:1px solid #efbbbb;background:#fff4f4;padding:8px 10px;border-radius:10px}
+    .logo-preview{display:flex;align-items:center;gap:16px}.logo-preview img{width:90px;height:90px;border-radius:20px;object-fit:cover;border:3px solid var(--gold)}
+    .profile-big{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);background:#f7efe1}
+    .notice{padding:12px 14px;border-radius:12px;background:#fff7dc;border:1px solid #eed38e;color:#6b4c00;font-size:13px}
+    .empty{padding:30px;text-align:center;color:var(--muted)}
+    .mobile-menu{display:none}
+    @media(max-width:1050px){.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:800px){
+      .sidebar{transform:translateX(-100%);transition:.25s}.sidebar.open{transform:translateX(0)}
+      main{margin-left:0;padding:14px}.mobile-menu{display:inline-flex}.grid-4,.grid-2,.form{grid-template-columns:1fr}
+      .topbar h1{font-size:21px}.topbar{align-items:flex-start}
+      .profile-chip{display:none}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img src="icon-192.png" alt="โลโก้คลังเจ๋งแจ๋ว">
+      <div><strong>คลังเจ๋งแจ๋ว</strong><span>ระบบรายรับ • รายจ่าย</span></div>
+    </div>
+    <nav>
+      <button class="active" data-page="home">🏠 หน้าแรก</button>
+      <button data-page="income">💰 รายรับ</button>
+      <button data-page="expense">💸 รายจ่าย</button>
+      <button data-page="transactions">📋 รายการทั้งหมด</button>
+      <button data-page="products">📦 สินค้า</button>
+      <button data-page="reports">📊 รายงาน</button>
+      <button data-page="profile">👤 โปรไฟล์</button>
+      <button data-page="settings">⚙️ ตั้งค่า</button>
+    </nav>
+    <div class="sidebar-profile">
+      <div class="avatar" id="sideAvatar">👤</div>
+      <div><div class="mini-name" id="sideName">ทรงกรด ขอกลาง</div><div class="mini-sub" id="sideShop">เจ้าของร้าน</div></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="btn btn-light mobile-menu" id="mobileBtn">☰</button>
+        <div><h1 id="pageTitle">หน้าแรก</h1><p id="pageSub">จัดการเงินในร้านของคุณได้ในที่เดียว</p></div>
+      </div>
+      <div class="profile-chip">
+        <div class="avatar" id="topAvatar">👤</div>
+        <div><b id="topName">ทรงกรด ขอกลาง</b><div style="font-size:11px;color:#7d685d" id="topRole">เจ้าของร้าน</div></div>
+      </div>
+    </div>
+
+    <section class="page active" id="page-home">
+      <div class="grid grid-4">
+        <div class="card stat"><div class="label">รายรับทั้งหมด</div><div class="value gold" id="totalIncome">฿0.00</div></div>
+        <div class="card stat"><div class="label">รายจ่ายทั้งหมด</div><div class="value red" id="totalExpense">฿0.00</div></div>
+        <div class="card stat"><div class="label">กำไรสุทธิ</div><div class="value green" id="netProfit">฿0.00</div></div>
+        <div class="card stat"><div class="label">จำนวนรายการ</div><div class="value" id="totalCount">0</div></div>
+      </div>
+      <div style="height:18px"></div>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>ทางลัด</h3>
+          <div class="actions">
+            <button class="btn btn-red" data-go="income">+ เพิ่มรายรับ</button>
+            <button class="btn btn-gold" data-go="expense">+ เพิ่มรายจ่าย</button>
+            <button class="btn btn-light" data-go="profile">👤 โปรไฟล์</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>สรุปวันนี้</h3>
+          <div id="todaySummary" class="muted">ยังไม่มีรายการวันนี้</div>
+        </div>
+      </div>
+      <div style="height:18px"></div>
+      <div class="card">
+        <h3>รายการล่าสุด</h3>
+        <div class="table-wrap"><table><thead><tr><th>วันที่</th><th>รายการ</th><th>ประเภท</th><th>จำนวนเงิน</th></tr></thead><tbody id="recentBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-income">
+      <div class="card">
+        <h3>เพิ่มรายรับ</h3>
+        <form id="incomeForm" class="form">
+          <div><label>วันที่</label><input name="date" type="date" required></div>
+          <div><label>ชื่อรายการ</label><input name="name" required placeholder="เช่น ขายไอดี eFootball"></div>
+          <div><label>หมวดหมู่</label><select name="category"><option>เกม / ไอดีเกม</option><option>สินค้า</option><option>บริการ</option><option>อื่น ๆ</option></select></div>
+          <div><label>ช่องทาง</label><select name="channel"><option>Facebook</option><option>LINE</option><option>โทรศัพท์</option><option>หน้าร้าน</option><option>อื่น ๆ</option></select></div>
+          <div><label>จำนวนเงิน (บาท)</label><input name="amount" type="number" min="0" step="0.01" required></div>
+          <div><label>หมายเหตุ</label><input name="note" placeholder="เช่น ลูกค้าโอนเงินแล้ว"></div>
+          <div class="full"><button class="btn btn-red" type="submit">บันทึกรายรับ</button></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="page" id="page-expense">
+      <div class="card">
+        <h3>เพิ่มรายจ่าย</h3>
+        <form id="expenseForm" class="form">
+          <div><label>วันที่</label><input name="date" type="date" required></div>
+          <div><label>ชื่อรายการ</label><input name="name" required placeholder="เช่น ซื้อไอดีเข้าร้าน"></div>
+          <div><label>หมวดหมู่</label><select name="category"><option>ซื้อสินค้า</option><option>ค่าโฆษณา</option><option>ค่าอินเทอร์เน็ต</option><option>ค่าบริการ</option><option>อื่น ๆ</option></select></div>
+          <div><label>ช่องทางจ่าย</label><select name="channel"><option>ธนาคาร</option><option>พร้อมเพย์</option><option>เงินสด</option><option>อื่น ๆ</option></select></div>
+          <div><label>จำนวนเงิน (บาท)</label><input name="amount" type="number" min="0" step="0.01" required></div>
+          <div><label>หมายเหตุ</label><input name="note"></div>
+          <div class="full"><button class="btn btn-gold" type="submit">บันทึกรายจ่าย</button></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="page" id="page-transactions">
+      <div class="card">
+        <div class="toolbar"><input id="search" placeholder="ค้นหารายการ..." style="max-width:320px"><select id="filter" style="max-width:220px"><option value="all">ทั้งหมด</option><option value="income">รายรับ</option><option value="expense">รายจ่าย</option></select></div>
+        <div class="table-wrap"><table><thead><tr><th>วันที่</th><th>รายการ</th><th>หมวดหมู่</th><th>ประเภท</th><th>จำนวน</th><th>ลบ</th></tr></thead><tbody id="allBody"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-products">
+      <div class="card">
+        <h3>เพิ่มสินค้า</h3>
+        <form id="productForm" class="form">
+          <div><label>ชื่อสินค้า</label><input name="name" required placeholder="เช่น ไอดี eFootball"></div>
+          <div><label>หมวดหมู่</label><input name="category" placeholder="เกม / ไอดีเกม"></div>
+          <div><label>ต้นทุน</label><input name="cost" type="number" min="0" step="0.01" required></div>
+          <div><label>ราคาขาย</label><input name="price" type="number" min="0" step="0.01" required></div>
+          <div><label>จำนวน</label><input name="qty" type="number" min="0" step="1" value="1" required></div>
+          <div class="full"><button class="btn btn-red" type="submit">บันทึกสินค้า</button></div>
+        </form>
+      </div>
+      <div style="height:18px"></div>
+      <div class="card"><h3>รายการสินค้า</h3><div class="table-wrap"><table><thead><tr><th>สินค้า</th><th>หมวด</th><th>ต้นทุน</th><th>ราคาขาย</th><th>กำไร/ชิ้น</th><th>คงเหลือ</th><th>ลบ</th></tr></thead><tbody id="productBody"></tbody></table></div></div>
+    </section>
+
+    <section class="page" id="page-reports">
+      <div class="grid grid-4">
+        <div class="card stat"><div class="label">รายรับ</div><div class="value gold" id="rIncome">฿0.00</div></div>
+        <div class="card stat"><div class="label">รายจ่าย</div><div class="value red" id="rExpense">฿0.00</div></div>
+        <div class="card stat"><div class="label">กำไรสุทธิ</div><div class="value green" id="rProfit">฿0.00</div></div>
+        <div class="card stat"><div class="label">อัตรากำไร</div><div class="value" id="rRate">0%</div></div>
+      </div>
+      <div style="height:18px"></div>
+      <div class="card"><h3>สรุป</h3><div class="notice">ระบบนี้เก็บข้อมูลในเบราว์เซอร์ของเครื่องนี้ เหมาะสำหรับใช้งานส่วนตัว หากต้องการซิงก์หลายเครื่อง ควรเพิ่มฐานข้อมูลออนไลน์ในภายหลัง</div></div>
+    </section>
+
+    <section class="page" id="page-profile">
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>โปรไฟล์ผู้ใช้</h3>
+          <div style="display:flex;align-items:center;gap:18px;margin-bottom:18px">
+            <div class="avatar" style="width:110px;height:110px" id="profileAvatar">👤</div>
+            <div><b id="profilePreviewName">ทรงกรด ขอกลาง</b><div class="muted" id="profilePreviewShop">เจ้าของร้าน</div></div>
+          </div>
+          <form id="profileForm" class="form">
+            <div class="full"><label>รูปโปรไฟล์</label><input id="profileImage" type="file" accept="image/*"></div>
+            <div><label>ชื่อผู้ใช้งาน</label><input name="owner" id="ownerInput" required></div>
+            <div><label>ตำแหน่ง</label><input name="role" id="roleInput" value="เจ้าของร้าน"></div>
+            <div class="full"><label>ชื่อร้าน</label><input name="shop" id="shopInput" required></div>
+            <div class="full"><button class="btn btn-red" type="submit">บันทึกโปรไฟล์</button></div>
+          </form>
+        </div>
+        <div class="card">
+          <h3>โลโก้แอป</h3>
+          <div class="logo-preview"><img src="icon-192.png" alt="โลโก้คลังเจ๋งแจ๋ว"><div><b>ใช้โลโก้ที่คุณส่งมา</b><p class="muted">โลโก้นี้ถูกใช้เป็นไอคอนของเว็บไซต์และแอปที่ติดตั้งบนเครื่อง</p></div></div>
+          <div style="height:18px"></div>
+          <div class="notice">สำหรับการสร้างแอปแบบติดตั้งได้ ให้เปิดเว็บผ่าน GitHub Pages แล้วกด “ติดตั้งแอป” ใน Chrome/เบราว์เซอร์ที่รองรับ</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-settings">
+      <div class="card">
+        <h3>ตั้งค่า</h3>
+        <p class="muted">การตั้งค่าหลักถูกย้ายมาอยู่ในหน้า “โปรไฟล์” เพื่อแก้ชื่อ รูป และชื่อร้านได้ง่ายขึ้น</p>
+        <div class="actions">
+          <button class="btn btn-red" id="installBtn">📲 ติดตั้งแอป</button>
+          <button class="btn btn-light" id="clearBtn">ล้างข้อมูลรายรับ/รายจ่าย/สินค้า</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const money = n => '฿' + Number(n||0).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});
+let data = JSON.parse(localStorage.getItem('kjj_transactions') || '[]');
+let products = JSON.parse(localStorage.getItem('kjj_products') || '[]');
+let profile = JSON.parse(localStorage.getItem('kjj_profile') || JSON.stringify({
+  owner:'ทรงกรด ขอกลาง', role:'เจ้าของร้าน', shop:'คลังเจ๋งแจ๋ว', image:''
+}));
+const today = new Date().toISOString().slice(0,10);
+document.querySelectorAll('input[type="date"]').forEach(x=>x.value=today);
+
+function save(){localStorage.setItem('kjj_transactions',JSON.stringify(data));localStorage.setItem('kjj_products',JSON.stringify(products));}
+function saveProfile(){localStorage.setItem('kjj_profile',JSON.stringify(profile)); renderProfile();}
+
+function renderProfile(){
+  $('sideName').textContent = profile.owner;
+  $('sideShop').textContent = profile.role;
+  $('topName').textContent = profile.owner;
+  $('topRole').textContent = profile.role;
+  $('profilePreviewName').textContent = profile.owner;
+  $('profilePreviewShop').textContent = profile.shop;
+  $('ownerInput').value = profile.owner;
+  $('roleInput').value = profile.role;
+  $('shopInput').value = profile.shop;
+  ['sideAvatar','topAvatar','profileAvatar'].forEach(id=>{
+    const el=$(id);
+    el.innerHTML = profile.image ? `<img src="${profile.image}" alt="รูปโปรไฟล์">` : '👤';
+  });
+}
+function render(){
+  const income=data.filter(x=>x.type==='income').reduce((a,b)=>a+b.amount,0);
+  const expense=data.filter(x=>x.type==='expense').reduce((a,b)=>a+b.amount,0);
+  const profit=income-expense;
+  $('totalIncome').textContent=money(income); $('totalExpense').textContent=money(expense);
+  $('netProfit').textContent=money(profit); $('totalCount').textContent=data.length;
+  $('rIncome').textContent=money(income); $('rExpense').textContent=money(expense); $('rProfit').textContent=money(profit);
+  $('rRate').textContent=(income?((profit/income)*100).toFixed(1):0)+'%';
+
+  const tData=data.filter(x=>x.date===today);
+  const ti=tData.filter(x=>x.type==='income').reduce((a,b)=>a+b.amount,0);
+  const te=tData.filter(x=>x.type==='expense').reduce((a,b)=>a+b.amount,0);
+  $('todaySummary').innerHTML=tData.length ? `วันนี้มี <b>${tData.length}</b> รายการ • รายรับ <b class="gold">${money(ti)}</b> • รายจ่าย <b class="red">${money(te)}</b>` : 'ยังไม่มีรายการวันนี้';
+
+  const recent=[...data].sort((a,b)=>b.created-a.created).slice(0,8);
+  $('recentBody').innerHTML=recent.length?recent.map(x=>`<tr><td>${x.date}</td><td>${esc(x.name)}</td><td><span class="pill ${x.type==='income'?'pill-in':'pill-out'}">${x.type==='income'?'รายรับ':'รายจ่าย'}</span></td><td class="${x.type==='income'?'green':'red'}">${x.type==='income'?'+':'-'}${money(x.amount)}</td></tr>`).join(''):`<tr><td colspan="4" class="empty">ยังไม่มีข้อมูล</td></tr>`;
+
+  renderTransactions(); renderProducts();
+}
+function renderTransactions(){
+  const q=($('search').value||'').toLowerCase(), f=$('filter').value;
+  const rows=data.filter(x=>(f==='all'||x.type===f) && `${x.name} ${x.category} ${x.note||''}`.toLowerCase().includes(q)).sort((a,b)=>b.created-a.created);
+  $('allBody').innerHTML=rows.length?rows.map(x=>`<tr><td>${x.date}</td><td>${esc(x.name)}</td><td>${esc(x.category)}</td><td><span class="pill ${x.type==='income'?'pill-in':'pill-out'}">${x.type==='income'?'รายรับ':'รายจ่าย'}</span></td><td>${money(x.amount)}</td><td><button class="danger" onclick="removeTx('${x.id}')">ลบ</button></td></tr>`).join(''):`<tr><td colspan="6" class="empty">ไม่พบข้อมูล</td></tr>`;
+}
+function renderProducts(){
+  $('productBody').innerHTML=products.length?products.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.category||'-')}</td><td>${money(p.cost)}</td><td>${money(p.price)}</td><td class="green">${money(p.price-p.cost)}</td><td>${p.qty}</td><td><button class="danger" onclick="removeProduct('${p.id}')">ลบ</button></td></tr>`).join(''):`<tr><td colspan="7" class="empty">ยังไม่มีสินค้า</td></tr>`;
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function removeTx(id){if(confirm('ลบรายการนี้หรือไม่?')){data=data.filter(x=>x.id!==id);save();render();}}
+function removeProduct(id){if(confirm('ลบสินค้านี้หรือไม่?')){products=products.filter(x=>x.id!==id);save();render();}}
+
+function addTx(form,type){
+  const fd=new FormData(form), amount=Number(fd.get('amount'));
+  if(amount<=0) return alert('กรุณาใส่จำนวนเงินมากกว่า 0');
+  data.push({id:crypto.randomUUID(),type,date:fd.get('date'),name:fd.get('name'),category:fd.get('category'),channel:fd.get('channel'),amount,note:fd.get('note'),created:Date.now()});
+  save();form.reset();form.querySelector('[name="date"]').value=today;render();alert(type==='income'?'บันทึกรายรับแล้ว':'บันทึกรายจ่ายแล้ว');
+}
+$('incomeForm').addEventListener('submit',e=>{e.preventDefault();addTx(e.target,'income')});
+$('expenseForm').addEventListener('submit',e=>{e.preventDefault();addTx(e.target,'expense')});
+$('productForm').addEventListener('submit',e=>{
+  e.preventDefault();const fd=new FormData(e.target);
+  products.push({id:crypto.randomUUID(),name:fd.get('name'),category:fd.get('category'),cost:Number(fd.get('cost')),price:Number(fd.get('price')),qty:Number(fd.get('qty'))});
+  save();e.target.reset();render();alert('บันทึกสินค้าแล้ว');
+});
+$('search').addEventListener('input',renderTransactions);$('filter').addEventListener('change',renderTransactions);
+
+$('profileImage').addEventListener('change',e=>{
+  const file=e.target.files?.[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{profile.image=reader.result;saveProfile();};
+  reader.readAsDataURL(file);
+});
+$('profileForm').addEventListener('submit',e=>{
+  e.preventDefault();const fd=new FormData(e.target);
+  profile.owner=fd.get('owner');profile.role=fd.get('role');profile.shop=fd.get('shop');saveProfile();alert('บันทึกโปรไฟล์แล้ว');
+});
+$('clearBtn').addEventListener('click',()=>{
+  if(confirm('ล้างข้อมูลทั้งหมดของคลังเจ๋งแจ๋วหรือไม่?')){
+    data=[];products=[];save();render();alert('ล้างข้อมูลแล้ว');
+  }
+});
+
+const pageMeta={
+  home:['หน้าแรก','จัดการเงินในร้านของคุณได้ในที่เดียว'],
+  income:['รายรับ','บันทึกเงินที่ร้านได้รับ'],
+  expense:['รายจ่าย','บันทึกต้นทุนและค่าใช้จ่าย'],
+  transactions:['รายการทั้งหมด','ค้นหาและตรวจสอบรายการย้อนหลัง'],
+  products:['สินค้า','เก็บต้นทุน ราคาขาย และกำไรต่อชิ้น'],
+  reports:['รายงาน','ดูภาพรวมกำไรและอัตรากำไร'],
+  profile:['โปรไฟล์','จัดการชื่อ รูปโปรไฟล์ และชื่อร้าน'],
+  settings:['ตั้งค่า','จัดการการติดตั้งและข้อมูลระบบ']
+};
+function openPage(name){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  $('page-'+name).classList.add('active');
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===name));
+  $('pageTitle').textContent=pageMeta[name][0];$('pageSub').textContent=pageMeta[name][1];
+  $('sidebar').classList.remove('open');
+}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>openPage(b.dataset.page)));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>openPage(b.dataset.go)));
+$('mobileBtn').addEventListener('click',()=> $('sidebar').classList.toggle('open'));
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
+$('installBtn').addEventListener('click',async()=>{
+  if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;}
+  else alert('เปิดเมนูเบราว์เซอร์แล้วเลือก “ติดตั้งแอป” หรือ “Add to Home screen” ได้เลย');
+});
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
+
+renderProfile();render();
+</script>
+</body>
+</html>
